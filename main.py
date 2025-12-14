@@ -3,6 +3,7 @@ from telebot import types
 import os
 import psycopg2
 from datetime import datetime, timedelta
+import flask
 
 # --- КОНФИГУРАЦИЯ ---
 # Токен бота берется из переменных окружения
@@ -611,6 +612,30 @@ def back_to_menu_callback(call):
     start(call.message)
 
 
+# --- НАСТРОЙКИ WEBHOOK ДЛЯ RENDER ---
+
+# Webhook-хост берется из переменной окружения Render.
+# Нужно, чтобы ты задал WEBHOOK_HOST в настройках Render (см. Шаг 3).
+WEBHOOK_HOST = os.environ.get('WEBHOOK_HOST')
+WEBHOOK_PORT = int(os.environ.get('PORT', '10000')) # Порт 10000 стандартен для Render
+
+if WEBHOOK_HOST:
+    app = flask.Flask(name)
+    WEBHOOK_URL_BASE = f"https://{WEBHOOK_HOST}"
+    WEBHOOK_URL_PATH = f"/{TOKEN}" # Можно использовать токен или просто "/webhook"
+    
+    @app.route(WEBHOOK_URL_PATH, methods=['POST'])
+    def webhook():
+        if flask.request.headers.get('content-type') == 'application/json':
+            json_string = flask.request.get_data().decode('utf-8')
+            update = telebot.types.Update.de_json(json_string)
+            bot.process_new_updates([update])
+            return ''
+        else:
+            flask.abort(403)
+
+
+# --- ЗАПУСК БОТА ---
 if __name__ == '__main__':
     # Инициализация БД при старте
     try:
@@ -619,5 +644,15 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"Error connecting to database: {e}")
         
-    print('Bot started...')
-    bot.polling(none_stop=True)
+    if WEBHOOK_HOST:
+        # Установка Webhook и запуск Flask-сервера
+        bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH)
+        print(f"Setting Webhook to: {WEBHOOK_URL_BASE}{WEBHOOK_URL_PATH}")
+        print(f'Starting Flask server on port {WEBHOOK_PORT}...')
+        
+        # Запуск веб-сервера. Render требует, чтобы он слушал 0.0.0.0
+        app.run(host='0.0.0.0', port=WEBHOOK_PORT)
+    else:
+        # Если переменная WEBHOOK_HOST не задана, запускаем Polling (для локального теста)
+        print('WEBHOOK_HOST not set. Starting in Polling mode...')
+        bot.polling(none_stop=True)
