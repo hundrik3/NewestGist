@@ -614,7 +614,7 @@ WEBHOOK_HOST = os.environ.get('WEBHOOK_HOST')
 WEBHOOK_PORT = int(os.environ.get('PORT', '10000')) # Порт 10000 стандартен для Render
 
 if WEBHOOK_HOST:
-    app = flask.Flask(name)
+    app = flask.Flask(__main__)
     WEBHOOK_URL_BASE = f"https://{WEBHOOK_HOST}"
     WEBHOOK_URL_PATH = f"/{TOKEN}" # Можно использовать токен или просто "/webhook"
     
