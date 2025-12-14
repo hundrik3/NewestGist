@@ -498,7 +498,7 @@ topic_content = {
     },
 }
 
-back_to_menu = return(topics)
+back_to_menu = 'main_menu'
 
 @bot.callback_query_handler(func=lambda call: call.data == 'activate_trial')
 def activate_trial_callback(call):
