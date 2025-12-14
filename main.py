@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 # Токен бота берется из переменных окружения
 TOKEN = '8556917553:AAHigvl4jDkx-HH7h3qaxmbln96PZLMKsIc'
 # Ссылка на базу данных (Internal Database URL из Render)
-DATABASE_URL = 'postgresql://forgist_user:FNm3qHpobvdWRn52sH0u57555Z7g5UDD@dpg-d4v6o50gjchc73cm6k60-a/forgist'
+DATABASE_URL = 'postgresql://gist_user:zN7mQYblAIz8SeAmsTtFxvZOCibLkOVA@dpg-d4v8nb6mcj7s73di0df0-a/gist'
 
 if not TOKEN:
     # Для локального теста можешь раскомментировать и вставить токен вручную, 
@@ -613,4 +613,4 @@ if __name__ == '__main__':
         print("Database initialized.")
     except Exception as e:
         print(f"Error connecting to database: {e}")
-        bot.polling(none_stop=True)
+bot.polling(none_stop=True)
