@@ -23,7 +23,7 @@ if not DATABASE_URL:
 bot = telebot.TeleBot(TOKEN)
 
 # ID админов
-users = [1035549880, 2028669813]
+users = [1035549880, 2028669813, 8183532126]
 
 TRIAL_DURATION_DAYS = 1
 
@@ -521,7 +521,7 @@ def topic_callback(call):
     user_id = call.message.chat.id
     
     if topic_id == 'topic_10':
-        info_text = '''ℹ️ <b>Информация о боте</b>\n\n🔬 Материалы по гистологии.\n💰 По вопросам доступа: @Allina_allin'''
+        info_text = '''ℹ️ <b>Информация о боте</b>\n\n🔬 Материалы по гистологии.\n💰 По вопросам: @Allina_allin'''
         markup = types.InlineKeyboardMarkup()
         back_btn = types.InlineKeyboardButton('⬅️ Назад', callback_data='back_to_menu')
         markup.row(back_btn)
@@ -532,7 +532,7 @@ def topic_callback(call):
     
     if access is None:
         if has_used_trial(user_id):
-            bot.answer_callback_query(call.id, '❌ Пробный период истёк.')
+            bot.answer_callback_query(call.id, '❌ Нужна активная подписка.')
         else:
             bot.answer_callback_query(call.id, '🔒 Активируйте пробный период.')
         return
