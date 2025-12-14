@@ -3,7 +3,6 @@ from telebot import types
 import os
 import psycopg2
 from datetime import datetime, timedelta
-import flask
 
 # --- КОНФИГУРАЦИЯ ---
 # Токен бота берется из переменных окружения
