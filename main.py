@@ -519,7 +519,7 @@ def activate_trial_callback(call):
         bot.answer_callback_query(call.id, '❌ Не удалось активировать (ошибка или уже активирован)')
         
 # ... (после topic_callback и content_callback)
-@bot.callback_query_handler(func=lambda call: call.data == 'main_menu')
+@bot.callback_query_handler(func=lambda call: call.data == 'back_to_menu')
 def back_to_menu_callback(call):
     # Убедимся, что бот "знает" имя пользователя из объекта call
     call.message.from_user = call.from_user
