@@ -128,7 +128,7 @@ def get_status_text(user_id):
     if remaining and remaining != 0:
         hours = int(remaining.total_seconds() // 3600)
         minutes = int((remaining.total_seconds() % 3600) // 60) 
-        return f'🎁 Пробный период\n📚 Доступен раздел: Эмбриология\n⏱ Осталось: {hours} ч. {minutes} мин.\n\nДля полного доступа обратитесь к @Allina_allin'
+        return f'🎁 Пробный период\n\n📚 Доступен раздел: Эмбриология. ⏱ Осталось: {hours} ч. {minutes} мин.\n\nДля полного доступа обратитесь к @Allina_allin'
     if has_used_trial(user_id):
         return '❌ Пробный период истёк\n\nДля полного доступа обратитесь к @Allina_allin'
     return '🔓 Нажмите кнопку ниже, чтобы активировать пробный период на 1 день!\n📚 Будет доступен раздел: Эмбриология\n\nДля полного доступа обратитесь к @Allina_allin'
@@ -498,8 +498,6 @@ topic_content = {
     },
 }
 
-back_to_menu = 'main_menu'
-
 @bot.callback_query_handler(func=lambda call: call.data == 'activate_trial')
 def activate_trial_callback(call):
     user_id = call.message.chat.id
@@ -519,7 +517,7 @@ def activate_trial_callback(call):
         bot.answer_callback_query(call.id, '❌ Не удалось активировать (ошибка или уже активирован)')
         
 # ... (после topic_callback и content_callback)
-@bot.callback_query_handler(func=lambda call: call.data == 'back_to_menu')
+@bot.callback_query_handler(func=lambda call: call.data == 'main_menu')
 def back_to_menu_callback(call):
     # Убедимся, что бот "знает" имя пользователя из объекта call
     call.message.from_user = call.from_user
