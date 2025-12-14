@@ -564,9 +564,6 @@ def back_to_menu_callback(call):
         parse_mode='html',
         reply_markup=markup
     )
-    return
-    
-access = has_access(user_id, topic_id)
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('content_'))
 def content_callback(call):
@@ -597,8 +594,7 @@ def content_callback(call):
     markup = types.InlineKeyboardMarkup()
     back_btn = types.InlineKeyboardButton('⬅️ Назад к разделу', callback_data=topic_id)
     menu_btn = types.InlineKeyboardButton('🏠 Главное меню', callback_data='back_to_menu')
-    markup.row(back_btn)
-    markup.row(menu_btn)
+    markup.row(back_btn, menu_btn)
     
     bot.edit_message_text(
         content,
