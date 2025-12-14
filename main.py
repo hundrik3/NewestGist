@@ -233,17 +233,23 @@ def topic_callback(call):
         markup = types.InlineKeyboardMarkup()
         markup.row(types.InlineKeyboardButton('⬅️ Назад', callback_data='back_to_menu'))
         bot.edit_message_text(
-            'ℹ️ <b>Информация о боте</b>\n\n🔬 Материалы по гистологии.\n💰 По вопросам доступа: @Allina_allin',
+            'ℹ️ <b>Информация о боте</b>\n\n🔬 Материалы по гистологии.\n\n💰 По вопросам: @Allina_allin',
             call.message.chat.id, call.message.message_id, parse_mode='html', reply_markup=markup
         )
         return
     
     access = has_access(user_id, topic_id)
-    if access is None:
-        bot.answer_callback_query(call.id, '❌ Пробный период истёк.' if has_used_trial(user_id) else '🔒 Активируйте пробный период.')
-        return
-    if access == 'trial' and topic_id != 'topic_1':
-        bot.answer_callback_query(call.id, '🔒 В пробной версии доступна только Эмбриология')
+    if access is None or (access == 'trial' and topic_id != 'topic_1'):
+        topic_name = topics.get(topic_id, 'Раздел')
+        markup = types.InlineKeyboardMarkup()
+        markup.row(types.InlineKeyboardButton('⬅️ Назад', callback_data='back_to_menu'))
+        if has_used_trial(user_id):
+            text = f'🔒 <b>{topic_name}</b>\n\nЭтот раздел недоступен.\n\n❌ У Вас пробная подписка.\n\nДля полного доступа обратитесь к @Allina_allin'
+        elif access == 'trial':
+            text = f'🔒 <b>{topic_name}</b>\n\nЭтот раздел недоступен.\n\n📚 В пробной версии доступна только Эмбриология.\n\nДля полного доступа обратитесь к @Allina_allin'
+        else:
+            text = f'🔒 <b>{topic_name}</b>\n\nЭтот раздел недоступен.\n\n🆓 Активируйте пробный период для доступа к разделу Эмбриология.\n\nДля полного доступа обратитесь к @Allina_allin'
+        bot.edit_message_text(text, call.message.chat.id, call.message.message_id, parse_mode='html', reply_markup=markup)
         return
     if topic_id not in topic_buttons or not topic_buttons[topic_id]:
         bot.answer_callback_query(call.id, '❌ Раздел пуст или в разработке')
