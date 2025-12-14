@@ -1,5 +1,2 @@
 pyTelegramBotAPI
 psycopg2-binary
-os
-date
-telebot
