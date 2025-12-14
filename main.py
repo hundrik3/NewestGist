@@ -2,12 +2,13 @@ import telebot
 from telebot import types
 import psycopg2
 from datetime import datetime, timedelta
+import flask
 
 # --- КОНФИГУРАЦИЯ ---
 # Токен бота берется из переменных окружения
-TOKEN = '8556917553:AAHigvl4jDkx-HH7h3qaxmbln96PZLMKsIc'
+TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
 # Ссылка на базу данных (Internal Database URL из Render)
-DATABASE_URL = 'postgresql://gist_user:zN7mQYblAIz8SeAmsTtFxvZOCibLkOVA@dpg-d4v8nb6mcj7s73di0df0-a'
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
 if not TOKEN:
     # Для локального теста можешь раскомментировать и вставить токен вручную, 
@@ -604,12 +605,47 @@ def content_callback(call):
         reply_markup=markup
     )
 
+# --- НАСТРОЙКИ WEBHOOK ДЛЯ RENDER ---
+
+# Webhook-хост берется из переменной окружения Render.
+# Нужно, чтобы ты задал WEBHOOK_HOST в настройках Render (см. Шаг 3).
+WEBHOOK_HOST = os.environ.get('WEBHOOK_HOST')
+WEBHOOK_PORT = int(os.environ.get('PORT', '10000')) # Порт 10000 стандартен для Render
+
+if WEBHOOK_HOST:
+    app = flask.Flask(name)
+    WEBHOOK_URL_BASE = f"https://{WEBHOOK_HOST}"
+    WEBHOOK_URL_PATH = f"/{TOKEN}" # Можно использовать токен или просто "/webhook"
+    
+    @app.route(WEBHOOK_URL_PATH, methods=['POST'])
+    def webhook():
+        if flask.request.headers.get('content-type') == 'application/json':
+            json_string = flask.request.get_data().decode('utf-8')
+            update = telebot.types.Update.de_json(json_string)
+            bot.process_new_updates([update])
+            return ''
+        else:
+            flask.abort(403)
+
+
 # --- ЗАПУСК БОТА ---
-if __name__ == '__main__':
+if name == 'main':
     # Инициализация БД при старте
     try:
         init_db()
         print("Database initialized.")
     except Exception as e:
         print(f"Error connecting to database: {e}")
+        
+    if WEBHOOK_HOST:
+        # Установка Webhook и запуск Flask-сервера
+        bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH)
+        print(f"Setting Webhook to: {WEBHOOK_URL_BASE}{WEBHOOK_URL_PATH}")
+        print(f'Starting Flask server on port {WEBHOOK_PORT}...')
+        
+        # Запуск веб-сервера. Render требует, чтобы он слушал 0.0.0.0
+        app.run(host='0.0.0.0', port=WEBHOOK_PORT)
+    else:
+        # Если переменная WEBHOOK_HOST не задана, запускаем Polling (для локального теста)
+        print('WEBHOOK_HOST not set. Starting in Polling mode...')
         bot.polling(none_stop=True)
