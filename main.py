@@ -498,6 +498,8 @@ topic_content = {
     },
 }
 
+back_to_menu = return(topics)
+
 @bot.callback_query_handler(func=lambda call: call.data == 'activate_trial')
 def activate_trial_callback(call):
     user_id = call.message.chat.id
@@ -523,7 +525,7 @@ def topic_callback(call):
     if topic_id == 'topic_10':
         info_text = '''ℹ️ <b>Информация о боте</b>\n\n🔬 Материалы по гистологии.\n💰 По вопросам: @Allina_allin'''
         markup = types.InlineKeyboardMarkup()
-        back_btn = types.InlineKeyboardButton('⬅️ Назад', callback_data=back_to_menu)
+        back_btn = types.InlineKeyboardButton('⬅️ Назад', callback_data='back_to_menu')
         markup.row(back_btn)
         bot.edit_message_text(info_text, call.message.chat.id, call.message.message_id, parse_mode='html', reply_markup=markup)
         return
@@ -554,7 +556,7 @@ def topic_callback(call):
         btn = types.InlineKeyboardButton(btn_text, callback_data=f'content_{topic_id}_{i+1}')
         markup.row(btn)
     
-    back_btn = types.InlineKeyboardButton('⬅️ Назад', callback_data=back_to_menu)
+    back_btn = types.InlineKeyboardButton('⬅️ Назад', callback_data='back_to_menu')
     markup.row(back_btn)
     
     bot.edit_message_text(
@@ -594,7 +596,7 @@ def content_callback(call):
     
     markup = types.InlineKeyboardMarkup()
     back_btn = types.InlineKeyboardButton('⬅️ Назад к разделу', callback_data=topic_id)
-    menu_btn = types.InlineKeyboardButton('🏠 Главное меню', callback_data=back_to_menu)
+    menu_btn = types.InlineKeyboardButton('🏠 Главное меню', callback_data='back_to_menu')
     markup.row(back_btn)
     markup.row(menu_btn)
     
