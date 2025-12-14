@@ -22,7 +22,7 @@ if not DATABASE_URL:
 bot = telebot.TeleBot(TOKEN)
 
 # ID админов
-users = [1035549880]
+users = [1035549880, 2028669813]
 
 TRIAL_DURATION_DAYS = 1
 
