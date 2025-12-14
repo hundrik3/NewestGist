@@ -6,9 +6,9 @@ from datetime import datetime, timedelta
 
 # --- КОНФИГУРАЦИЯ ---
 # Токен бота берется из переменных окружения
-TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
+TOKEN = '8556917553:AAHigvl4jDkx-HH7h3qaxmbln96PZLMKsIc'
 # Ссылка на базу данных (Internal Database URL из Render)
-DATABASE_URL = os.environ.get('DATABASE_URL')
+DATABASE_URL = 'postgresql://forgist_user:FNm3qHpobvdWRn52sH0u57555Z7g5UDD@dpg-d4v6o50gjchc73cm6k60-a/forgist'
 
 if not TOKEN:
     # Для локального теста можешь раскомментировать и вставить токен вручную, 
