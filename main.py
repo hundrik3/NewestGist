@@ -128,7 +128,7 @@ def get_status_text(user_id):
     if remaining and remaining != 0:
         hours = int(remaining.total_seconds() // 3600)
         minutes = int((remaining.total_seconds() % 3600) // 60) 
-        return f'🎁 Пробный период\n\n📚 Доступен раздел: Эмбриология. ⏱ Осталось: {hours} ч. {minutes} мин.\n\nДля полного доступа обратитесь к @Allina_allin'
+        return f'🎁 Пробный период\n📚 Доступен раздел: Эмбриология\n⏱ Осталось: {hours} ч. {minutes} мин.\n\nДля полного доступа обратитесь к @Allina_allin'
     if has_used_trial(user_id):
         return '❌ Пробный период истёк\n\nДля полного доступа обратитесь к @Allina_allin'
     return '🔓 Нажмите кнопку ниже, чтобы активировать пробный период на 1 день!\n📚 Будет доступен раздел: Эмбриология\n\nДля полного доступа обратитесь к @Allina_allin'
@@ -515,16 +515,18 @@ def activate_trial_callback(call):
         start(call.message) # Обновляем меню
     else:
         bot.answer_callback_query(call.id, '❌ Не удалось активировать (ошибка или уже активирован)')
-        
-# ... (после topic_callback и content_callback)
-@bot.callback_query_handler(func=lambda call: call.data == 'back_to_menu')
-def back_to_menu_callback(call):
-    # Убедимся, что бот "знает" имя пользователя из объекта call
-    call.message.from_user = call.from_user
-    # Вызываем функцию start, чтобы показать главное меню
-    start(call.message)
-    # Убираем "часики" после нажатия
-    bot.answer_callback_query(call.id)
+@bot.callback_query_handler(func=lambda call: call.data.startswith('topic_'))
+def topic_callback(call):
+    topic_id = call.data
+    user_id = call.message.chat.id
+    
+    if topic_id == 'topic_10':
+        info_text = '''ℹ️ <b>Информация о боте</b>\n\n🔬 Материалы по гистологии.\n💰 По вопросам: @Allina_allin'''
+        markup = types.InlineKeyboardMarkup()
+        back_btn = types.InlineKeyboardButton('⬅️ Назад', callback_data=back_to_menu)
+        markup.row(back_btn)
+        bot.edit_message_text(info_text, call.message.chat.id, call.message.message_id, parse_mode='html', reply_markup=markup)
+        return
     
     access = has_access(user_id, topic_id)
     
@@ -552,7 +554,7 @@ def back_to_menu_callback(call):
         btn = types.InlineKeyboardButton(btn_text, callback_data=f'content_{topic_id}_{i+1}')
         markup.row(btn)
     
-    back_btn = types.InlineKeyboardButton('⬅️ Назад', callback_data='back_to_menu')
+    back_btn = types.InlineKeyboardButton('⬅️ Назад', callback_data=back_to_menu)
     markup.row(back_btn)
     
     bot.edit_message_text(
@@ -562,6 +564,7 @@ def back_to_menu_callback(call):
         parse_mode='html',
         reply_markup=markup
     )
+
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('content_'))
 def content_callback(call):
@@ -591,8 +594,9 @@ def content_callback(call):
     
     markup = types.InlineKeyboardMarkup()
     back_btn = types.InlineKeyboardButton('⬅️ Назад к разделу', callback_data=topic_id)
-    menu_btn = types.InlineKeyboardButton('🏠 Главное меню', callback_data='back_to_menu')
-    markup.row(back_btn, menu_btn)
+    menu_btn = types.InlineKeyboardButton('🏠 Главное меню', callback_data=back_to_menu)
+    markup.row(back_btn)
+    markup.row(menu_btn)
     
     bot.edit_message_text(
         content,
