@@ -5,7 +5,6 @@ import os
 from datetime import datetime, timedelta
 import flask
 
-# --- КОНФИГУРАЦИЯ ---
 TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
@@ -19,8 +18,6 @@ bot = telebot.TeleBot(TOKEN)
 
 users = [1035549880, 2028669813]
 TRIAL_DURATION_DAYS = 1
-
-# --- РАБОТА С БАЗОЙ ДАННЫХ (PostgreSQL) ---
 
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL)
@@ -112,8 +109,8 @@ def get_status_text(user_id):
         minutes = int((remaining.total_seconds() % 3600) // 60) 
         return f'🎁 Пробный период\n\n📚 Доступный раздел: Эмбриология\n⏱ Осталось: {hours} ч. {minutes} мин.\n\n⭐ Для полного доступа обратитесь к @Allina_allin'
     if has_used_trial(user_id):
-        return '❌ Пробный период истёк\n\nДля полного доступа обратитесь к @Allina_allin'
-    return '🔓 Нажмите кнопку ниже, чтобы активировать пробный период на 1 день!\n📚 Будет доступен раздел: Эмбриология\n\nДля полного доступа обратитесь к @Allina_allin'
+        return '❌ Пробный период истёк\n\n⭐ Для полного доступа обратитесь к @Allina_allin'
+    return '🔓 Нажмите кнопку ниже, чтобы активировать пробный период на 1 день!\n📚 Будет доступен раздел: Эмбриология\n\n⭐ Для полного доступа обратитесь к @Allina_allin'
 
 def get_main_menu_markup(user_id):
     is_subscribed = user_id in users
@@ -142,11 +139,10 @@ def start(message):
     user_id = message.chat.id
     bot.send_message(
         message.chat.id,
-        f'Привет, {message.from_user.first_name}!\n\n{get_status_text(user_id)}',
+        f'👋 Привет, {message.from_user.first_name}!\n\n{get_status_text(user_id)}',
         parse_mode='html', reply_markup=get_main_menu_markup(user_id)
     )
 
-# --- ДАННЫЕ ---
 topics = {
     'topic_1': '👶 Эмбриология',
     'topic_2': '💈 Эпителиальные ткани',
@@ -171,7 +167,6 @@ topic_buttons = {
     'topic_9': ['Почка: развитие и общая характеристика строения', 'Почка: нефроны и собирательные трубочки', 'Почка: юкстагломерулярный комплекс', 'Мочевыводящие пути: строение и функции', 'Яичко: развитие, строение и функции', 'Семявыносящие пути: развитие, строение и функции', 'Предстательная железа: развитие, строение и функции', 'Яичник: развитие, строение, функции, циклическая деятельность', 'Маточная труба: развитие, строение и функции', 'Матка: развитие, строение, регенерация, циклические изменения', 'Шейка матки: строение в разных отделах, функции, изменения в разные фазы меструального цикла', 'Влагалище,  развитие, строение, функции и регенерация'],
 }
 
-# Оптимизированный topic_content - только URL для каждого топика
 topic_urls = {
     'topic_1': ('https://docs.google.com/document/d/1dxW2OgjwsIWh3w1r4mjmscH7SI9-Yo5Y122_Q2CrfHE/edit?usp=sharing', 14),
     'topic_2': ('https://docs.google.com/document/d/1Wq32ESadlqyMD5oYln9VkTQOuf4PgQFzuwei4y53w1U/edit?usp=sharing', 9),
@@ -190,7 +185,7 @@ def get_topic_content(topic_id, content_idx):
     url, count = topic_urls[topic_id]
     if content_idx < 1 or content_idx > count:
         return None
-    return f'{url}\n\nИспользуйте вкладки'
+    return f'{url}\n\n📟 Используйте вкладки'
 
 # --- CALLBACK HANDLERS ---
 
@@ -260,7 +255,7 @@ def topic_callback(call):
     markup.row(types.InlineKeyboardButton('⬅️ Назад', callback_data='back_to_menu'))
     
     bot.edit_message_text(
-        f'📖 <b>{topics.get(topic_id, "Раздел")}</b>\n\nВыберите тему:',
+        f'<b>{topics.get(topic_id, "Раздел")}</b>\n\n🥄 Выберите тему:',
         call.message.chat.id, call.message.message_id,
         parse_mode='html', reply_markup=markup
     )
@@ -290,7 +285,6 @@ def content_callback(call):
     
     bot.edit_message_text(content, call.message.chat.id, call.message.message_id, parse_mode='html', reply_markup=markup)
 
-# --- WEBHOOK ---
 WEBHOOK_HOST = os.environ.get('WEBHOOK_HOST')
 WEBHOOK_PORT = int(os.environ.get('PORT', '10000'))
 
