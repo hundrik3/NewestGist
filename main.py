@@ -18,6 +18,8 @@ top7 = os.environ.get('TOP7')
 top8 = os.environ.get('TOP8')
 top9 = os.environ.get('TOP9')
 
+manager = os.environ('MANAGER')
+
 if not TOKEN:
     raise ValueError("TELEGRAM_BOT_TOKEN environment variable is required")
 
@@ -117,10 +119,10 @@ def get_status_text(user_id):
     if remaining and remaining != 0:
         hours = int(remaining.total_seconds() // 3600)
         minutes = int((remaining.total_seconds() % 3600) // 60) 
-        return f'🎁 Пробный период\n\n📚 Доступный раздел: Эмбриология\n⏱ Осталось: {hours} ч. {minutes} мин.\n\n⭐ Для полного доступа обратитесь к @Allina_allin'
+        return f'🎁 Пробный период\n\n📚 Доступный раздел: Эмбриология\n⏱ Осталось: {hours} ч. {minutes} мин.\n\n⭐ Для полного доступа обратитесь к {manager}'
     if has_used_trial(user_id):
-        return '❌ Пробный период истёк\n\n⭐ Для полного доступа обратитесь к @Allina_allin'
-    return '🔓 Нажмите кнопку ниже, чтобы активировать пробный период на 1 день!\n📚 Будет доступен раздел: Эмбриология\n\n⭐ Для полного доступа обратитесь к @Allina_allin'
+        return f'❌ Пробный период истёк\n\n⭐ Для полного доступа обратитесь к {manager}'
+    return f'🔓 Нажмите кнопку ниже, чтобы активировать пробный период на 1 день!\n📚 Будет доступен раздел: Эмбриология\n\n⭐ Для полного доступа обратитесь к {manager}'
 
 def get_main_menu_markup(user_id):
     is_subscribed = user_id in users
@@ -197,8 +199,6 @@ def get_topic_content(topic_id, content_idx):
         return None
     return f'{url}\n\n📟 Используйте вкладки'
 
-# --- CALLBACK HANDLERS ---
-
 @bot.callback_query_handler(func=lambda call: call.data == 'activate_trial')
 def activate_trial_callback(call):
     user_id = call.message.chat.id
@@ -237,7 +237,7 @@ def topic_callback(call):
     if topic_id == 'topic_10':
         markup = types.InlineKeyboardMarkup()
         markup.row(types.InlineKeyboardButton('⬅️ Назад', callback_data='back_to_menu'))
-        bot.edit_message_text( 'ℹ️ <b>Информация</b>\n\n🔬 9 разделов для изучения\n\n⭐ По вопросам: @Allina_allin',
+        bot.edit_message_text( f'ℹ️ <b>Информация</b>\n\n🔬 9 разделов для изучения\n\n⭐ По вопросам: {manager}',
             call.message.chat.id, call.message.message_id, parse_mode='html', reply_markup=markup
         )
         return
@@ -248,11 +248,11 @@ def topic_callback(call):
         markup = types.InlineKeyboardMarkup()
         markup.row(types.InlineKeyboardButton('⬅️ Назад', callback_data='back_to_menu'))
         if has_used_trial(user_id):
-            text = f'<b>{topic_name}</b>\n\n🔒Этот раздел недоступен.\n\nДля доступа обратитесь к @Allina_allin'
+            text = f'<b>{topic_name}</b>\n\n🔒Этот раздел недоступен.\n\nДля доступа обратитесь к {manager}'
         elif access == 'trial':
-            text = f'<b>{topic_name}</b>\n\n🔒Этот раздел недоступен.\n\n📚 В пробной версии доступна только Эмбриология.\n\nДля полного доступа обратитесь к @Allina_allin'
+            text = f'<b>{topic_name}</b>\n\n🔒Этот раздел недоступен.\n\n📚 В пробной версии доступна только Эмбриология.\n\nДля полного доступа обратитесь к {manager}'
         else:
-            text = f'<b>{topic_name}</b>\n\n🔒Этот раздел недоступен.\n\n🆓 Активируйте пробный период для доступа к разделу Эмбриология.\n\nДля полного доступа обратитесь к @Allina_allin'
+            text = f'<b>{topic_name}</b>\n\n🔒Этот раздел недоступен.\n\n🆓 Активируйте пробный период для доступа к разделу Эмбриология.\n\nДля полного доступа обратитесь к {manager}'
         bot.edit_message_text(text, call.message.chat.id, call.message.message_id, parse_mode='html', reply_markup=markup)
         return
     if topic_id not in topic_buttons or not topic_buttons[topic_id]:
