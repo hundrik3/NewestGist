@@ -8,6 +8,16 @@ import flask
 TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
+top1 = os.environ.get('TOP1')
+top2 = os.environ.get('TOP2')
+top3 = os.environ.get('TOP3')
+top4 = os.environ.get('TOP4')
+top5 = os.environ.get('TOP5')
+top6 = os.environ.get('TOP6')
+top7 = os.environ.get('TOP7')
+top8 = os.environ.get('TOP8')
+top9 = os.environ.get('TOP9')
+
 if not TOKEN:
     raise ValueError("TELEGRAM_BOT_TOKEN environment variable is required")
 
@@ -168,15 +178,15 @@ topic_buttons = {
 }
 
 topic_urls = {
-    'topic_1': ('https://docs.google.com/document/d/1dxW2OgjwsIWh3w1r4mjmscH7SI9-Yo5Y122_Q2CrfHE/edit?usp=sharing', 14),
-    'topic_2': ('https://docs.google.com/document/d/1Wq32ESadlqyMD5oYln9VkTQOuf4PgQFzuwei4y53w1U/edit?usp=sharing', 9),
-    'topic_3': ('https://docs.google.com/document/d/1pub86NiGog7XLUNVE4KzH18cgvtGsD89brrroLQwn2Q/edit?tab=t.dleiqof79eyn', 10),
-    'topic_4': ('https://docs.google.com/document/d/15ATRUqAPAuqlShKhqzvvcxdXApkKk7kR9lGX266MYGw/edit?usp=sharing', 13),
-    'topic_5': ('https://docs.google.com/document/d/1DirRgdUYDbDuwTlvGrO8BRYlGfzy9oKcwcTH_jJWMdM/edit?usp=sharing', 27),
-    'topic_6': ('https://docs.google.com/document/d/1W48gmy0CaqkRKvKdlvpdyY4YVdH6ta9QVKzmo77GSKc/edit?tab=t.dl2u6sid25ml', 18),
-    'topic_7': ('https://docs.google.com/document/d/1w9ezdIrbV3L-_d9Fw3N7BjbiR3RhbrWzB_TwO4lfRBY/edit?tab=t.dl2u6sid25ml', 17),
-    'topic_8': ('https://docs.google.com/document/d/1_PcFvD2UV1WytMTfepLBEznKJIRoquJbgcoNRW-93Vw/edit?tab=t.dl2u6sid25ml', 13),
-    'topic_9': ('https://docs.google.com/document/d/1RtLy448W49TD-DKIuspcRrOk2ecKRwz_apWBzsBvOHI/edit?tab=t.dl2u6sid25ml', 12),
+    'topic_1': ('top1', 14),
+    'topic_2': ('top2', 9),
+    'topic_3': ('top3', 10),
+    'topic_4': ('top4', 13),
+    'topic_5': ('top5', 27),
+    'topic_6': ('top6', 18),
+    'topic_7': ('top7', 17),
+    'topic_8': ('top8', 13),
+    'topic_9': ('top9', 12),
 }
 
 def get_topic_content(topic_id, content_idx):
