@@ -18,7 +18,7 @@ top7 = os.environ.get('TOP7')
 top8 = os.environ.get('TOP8')
 top9 = os.environ.get('TOP9')
 
-manager = os.environ('MANAGER')
+manager = os.environ.get('MANAGER')
 
 if not TOKEN:
     raise ValueError("TELEGRAM_BOT_TOKEN environment variable is required")
