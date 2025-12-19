@@ -20,6 +20,8 @@ top9 = os.environ.get('TOP9')
 
 manager = os.environ.get('MANAGER')
 
+users = os.environ.get('USERS')
+
 if not TOKEN:
     raise ValueError("TELEGRAM_BOT_TOKEN environment variable is required")
 
@@ -28,7 +30,6 @@ if not DATABASE_URL:
 
 bot = telebot.TeleBot(TOKEN)
 
-users = [1035549880, 2028669813]
 TRIAL_DURATION_DAYS = 1
 
 def get_db_connection():
@@ -128,7 +129,7 @@ def get_main_menu_markup(user_id):
     is_subscribed = user_id in users
     markup = types.InlineKeyboardMarkup()
     if not is_subscribed and not has_trial_access(user_id) and not has_used_trial(user_id):
-        markup.row(types.InlineKeyboardButton('🆓 Активировать пробный период (1 день)', callback_data='activate_trial'))
+        markup.row(types.InlineKeyboardButton('🆓 Активировать пробный период ( 1 день )', callback_data='activate_trial'))
     buttons = [
         ('👶 Эмбриология', 'topic_1'), ('💈 Эпителиальные ткани', 'topic_2'),
         ('🩸 Кровь и ткани внутренней среды', 'topic_3'),
@@ -180,15 +181,15 @@ topic_buttons = {
 }
 
 topic_urls = {
-    'topic_1': ('top1', 14),
-    'topic_2': ('top2', 9),
-    'topic_3': ('top3', 10),
-    'topic_4': ('top4', 13),
-    'topic_5': ('top5', 27),
-    'topic_6': ('top6', 18),
-    'topic_7': ('top7', 17),
-    'topic_8': ('top8', 13),
-    'topic_9': ('top9', 12),
+    'topic_1': (f'{top1}', 14),
+    'topic_2': (f'{top2}', 9),
+    'topic_3': (f'{top3}', 10),
+    'topic_4': (f'{top4}', 13),
+    'topic_5': (f'{top5}', 27),
+    'topic_6': (f'{top6}', 18),
+    'topic_7': (f'{top7}', 17),
+    'topic_8': (f'{top8}', 13),
+    'topic_9': (f'{top9}', 12),
 }
 
 def get_topic_content(topic_id, content_idx):
