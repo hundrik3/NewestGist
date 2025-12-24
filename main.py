@@ -20,7 +20,7 @@ top9 = os.environ.get('TOP9')
 
 manager = os.environ.get('MANAGER')
 
-users = os.environ.get('USERS')
+users = [2028669813, 1035549880]
 
 if not TOKEN:
     raise ValueError("TELEGRAM_BOT_TOKEN environment variable is required")
