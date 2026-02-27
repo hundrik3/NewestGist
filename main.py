@@ -115,7 +115,7 @@ def has_access(user_id, topic_id=None):
 
 def get_status_text(user_id):
     if user_id in users:
-        return '⚡ Статус подписки - <b>Активная</b>'
+        return '⚡ Статус подписки - <code>Активная</code>'
     remaining = get_trial_remaining(user_id)
     if remaining and remaining != 0:
         hours = int(remaining.total_seconds() // 3600)
@@ -152,7 +152,7 @@ def start(message):
     user_id = message.chat.id
     bot.send_message(
         message.chat.id,
-        f'👋 Привет, {message.from_user.first_name}!\n\n{get_status_text(user_id)}',
+        f'👋 Привет, <b>{message.from_user.first_name}</b>!\n\n{get_status_text(user_id)}',
         parse_mode='html', reply_markup=get_main_menu_markup(user_id)
     )
 
@@ -198,7 +198,7 @@ def get_topic_content(topic_id, content_idx):
     url, count = topic_urls[topic_id]
     if content_idx < 1 or content_idx > count:
         return None
-    return f'{url}\n\n📟 Используйте вкладки'
+    return f'{url}'
 
 @bot.callback_query_handler(func=lambda call: call.data == 'activate_trial')
 def activate_trial_callback(call):
