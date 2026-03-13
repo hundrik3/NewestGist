@@ -115,21 +115,21 @@ def has_access(user_id, topic_id=None):
 
 def get_status_text(user_id):
     if user_id in users:
-        return '⚡ Статус подписки - <code>Активная</code>'
+        return '⚡ <b>Статус подписки</b> - <code>Активная</code>'
     remaining = get_trial_remaining(user_id)
     if remaining and remaining != 0:
         hours = int(remaining.total_seconds() // 3600)
         minutes = int((remaining.total_seconds() % 3600) // 60) 
-        return f'🎁 Пробный период\n\n📚 Доступный раздел: Эмбриология\n⏱ Осталось: {hours} ч. {minutes} мин.\n\n⭐ Для полного доступа обратитесь к {manager}'
+        return f'🎁 Пробный период\n\n📚 Доступный раздел: 👶 Эмбриология\n🕧 Осталось: <b>{hours} ч. {minutes} мин.</b>'
     if has_used_trial(user_id):
         return f'❌ Пробный период истёк\n\n⭐ Для полного доступа обратитесь к {manager}'
-    return f'🔓 Нажмите кнопку ниже, чтобы активировать пробный период на 1 день!\n📚 Будет доступен раздел: Эмбриология\n\n⭐ Для полного доступа обратитесь к {manager}'
+    return f'🔓 Нажмите кнопку ниже, чтобы активировать пробный период на 24 часа!\n📚 Будет доступен раздел: 👶 Эмбриология'
 
 def get_main_menu_markup(user_id):
     is_subscribed = user_id in users
     markup = types.InlineKeyboardMarkup()
     if not is_subscribed and not has_trial_access(user_id) and not has_used_trial(user_id):
-        markup.row(types.InlineKeyboardButton('🆓 Активировать пробный период ( 1 день )', callback_data='activate_trial'))
+        markup.row(types.InlineKeyboardButton('🎫 Активировать пробный период', callback_data='activate_trial'))
     buttons = [
         ('👶 Эмбриология', 'topic_1'), ('💈 Эпителиальные ткани', 'topic_2'),
         ('🩸 Кровь и ткани внутренней среды', 'topic_3'),
@@ -238,7 +238,7 @@ def topic_callback(call):
     if topic_id == 'topic_10':
         markup = types.InlineKeyboardMarkup()
         markup.row(types.InlineKeyboardButton('⬅️ Назад', callback_data='back_to_menu'))
-        bot.edit_message_text( f'ℹ️ <b>Информация</b>\n\n🔬 9 разделов для изучения\n\n⭐ По вопросам: {manager}',
+        bot.edit_message_text( f'ℹ️ <b>Информация</b>\n\n🔬 9 разделов для изучения\n\n⭐ Поддержка: {manager}',
             call.message.chat.id, call.message.message_id, parse_mode='html', reply_markup=markup
         )
         return
@@ -249,11 +249,11 @@ def topic_callback(call):
         markup = types.InlineKeyboardMarkup()
         markup.row(types.InlineKeyboardButton('⬅️ Назад', callback_data='back_to_menu'))
         if has_used_trial(user_id):
-            text = f'<b>{topic_name}</b>\n\n🔒Этот раздел недоступен.\n\nДля доступа обратитесь к {manager}'
+            text = f'<b>{topic_name}</b>\n\n🔒 Этот раздел недоступен.\n\n⭐ Для доступа обратитесь к {manager}'
         elif access == 'trial':
-            text = f'<b>{topic_name}</b>\n\n🔒Этот раздел недоступен.\n\n📚 В пробной версии доступна только Эмбриология.\n\nДля полного доступа обратитесь к {manager}'
+            text = f'<b>{topic_name}</b>\n\n🔒 Этот раздел недоступен.\n\n📚 В пробной версии доступна только 👨‍🦲 Эмбриология.\n\n⭐ Для полного доступа обратитесь к {manager}'
         else:
-            text = f'<b>{topic_name}</b>\n\n🔒Этот раздел недоступен.\n\n🆓 Активируйте пробный период для доступа к разделу Эмбриология.\n\nДля полного доступа обратитесь к {manager}'
+            text = f'<b>{topic_name}</b>\n\n🔒 Этот раздел недоступен.\n\n🎫 Активируйте пробный период для доступа к разделу Эмбриология.\n\n⭐ Для полного доступа обратитесь к {manager}'
         bot.edit_message_text(text, call.message.chat.id, call.message.message_id, parse_mode='html', reply_markup=markup)
         return
     if topic_id not in topic_buttons or not topic_buttons[topic_id]:
