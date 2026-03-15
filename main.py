@@ -120,9 +120,9 @@ def get_status_text(user_id):
     if remaining and remaining != 0:
         hours = int(remaining.total_seconds() // 3600)
         minutes = int((remaining.total_seconds() % 3600) // 60) 
-        return f'🎁 Пробный период\n\n📚 Доступный раздел: 👶 Эмбриология\n🕧 Осталось: <b>{hours} ч. {minutes} мин.</b>'
+        return f'<b>🎁 Статус подписки</b> - <code>Пробная</code>\n\n📚 Доступный раздел: <code>👶 Эмбриология</code>\n🕧 Осталось: <code>{hours} ч. {minutes} мин.</code>'
     if has_used_trial(user_id):
-        return f'❌ Пробный период истёк\n\n⭐ Для полного доступа обратитесь к {manager}'
+        return f'❌ <b>Статус подписки</b> - <code>Неактивная</code>\n\n⭐ Для полного доступа обратитесь к {manager}'
     return f'🔓 Нажмите кнопку ниже, чтобы активировать пробный период на 24 часа!\n📚 Будет доступен раздел: 👶 Эмбриология'
 
 def get_main_menu_markup(user_id):
@@ -249,11 +249,11 @@ def topic_callback(call):
         markup = types.InlineKeyboardMarkup()
         markup.row(types.InlineKeyboardButton('⬅️ Назад', callback_data='back_to_menu'))
         if has_used_trial(user_id):
-            text = f'<b>{topic_name}</b>\n\n🔒 Этот раздел недоступен.\n\n⭐ Для доступа обратитесь к {manager}'
+            text = f'<b>{topic_name}</b>\n\n🔒 Этот раздел недоступен.\n\n⌛ Ваша пробная подписка истекла.\n\n⭐ Для полного доступа обратитесь к {manager}'
         elif access == 'trial':
-            text = f'<b>{topic_name}</b>\n\n🔒 Этот раздел недоступен.\n\n📚 В пробной версии доступна только 👨‍🦲 Эмбриология.\n\n⭐ Для полного доступа обратитесь к {manager}'
+            text = f'<b>{topic_name}</b>\n\n🔒 Этот раздел недоступен.\n\n📚 В пробной версии доступна только 👶 Эмбриология.\n\n⭐ Для полного доступа обратитесь к {manager}'
         else:
-            text = f'<b>{topic_name}</b>\n\n🔒 Этот раздел недоступен.\n\n🎫 Активируйте пробный период для доступа к разделу Эмбриология.\n\n⭐ Для полного доступа обратитесь к {manager}'
+            text = f'<b>{topic_name}</b>\n\n🔒 Этот раздел недоступен.\n\n🎫 Активируйте пробный период для доступа к разделу 👶 Эмбриология.\n\n⭐ Для полного доступа обратитесь к {manager}'
         bot.edit_message_text(text, call.message.chat.id, call.message.message_id, parse_mode='html', reply_markup=markup)
         return
     if topic_id not in topic_buttons or not topic_buttons[topic_id]:
@@ -266,7 +266,7 @@ def topic_callback(call):
     markup.row(types.InlineKeyboardButton('⬅️ Назад', callback_data='back_to_menu'))
     
     bot.edit_message_text(
-        f'<b>{topics.get(topic_id, "Раздел")}</b>\n\n🥄 Выберите тему:',
+        f'<b>{topics.get(topic_id, "Раздел")}</b>',
         call.message.chat.id, call.message.message_id,
         parse_mode='html', reply_markup=markup
     )
@@ -287,7 +287,7 @@ def content_callback(call):
     
     content = get_topic_content(topic_id, content_idx)
     if content is None:
-        bot.answer_callback_query(call.id, '❌ Контент не найден')
+        bot.answer_callback_query(call.id, '❌ Не найдено')
         return
     
     markup = types.InlineKeyboardMarkup()
@@ -315,14 +315,14 @@ if WEBHOOK_HOST:
 if __name__ == '__main__':
     try:
         init_db()
-        print("Database initialized.")
+        print("✅ Database initialized.")
     except Exception as e:
-        print(f"Error connecting to database: {e}")
+        print(f"❌ Error connecting to database: {e}")
         
     if WEBHOOK_HOST:
         bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH)
         print(f"Webhook: {WEBHOOK_URL_BASE}{WEBHOOK_URL_PATH}")
         app.run(host='0.0.0.0', port=WEBHOOK_PORT)
     else:
-        print('Starting in Polling mode...')
+        print('♻️ Starting in Polling mode...')
         bot.polling(none_stop=True)
