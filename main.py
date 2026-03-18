@@ -19,6 +19,8 @@ top8 = os.environ.get('TOP8')
 top9 = os.environ.get('TOP9')
 
 manager = os.environ.get('MANAGER')
+channel_id = os.environ.get('CHANNEL_ID')
+channel_url = os.environ.get('CHANNEL_URL')
 
 users = [2028669813, 1035549880]
 
@@ -147,9 +149,36 @@ def get_main_menu_markup(user_id):
         markup.row(types.InlineKeyboardButton(text, callback_data=data))
     return markup
 
+def is_subscribed(user_id):
+    if not channel_id:
+        return True 
+    if user_id in users:
+        return True
+    
+    try:
+        status = bot.get_chat_member(channel_id, user_id).status
+        return status in ['member', 'administrator', 'creator']
+    except Exception as e:
+        print(f"Ошибка проверки подписки: {e}")
+        return False
+
+def get_sub_markup():
+    markup = types.InlineKeyboardMarkup()
+    markup.row(types.InlineKeyboardButton('📢 Подписаться на канал', url=channel_url))
+    markup.row(types.InlineKeyboardButton('🔄 Я подписался', callback_data='check_sub'))
+    return markup
+
 @bot.message_handler(commands=['start'])
 def start(message):
     user_id = message.chat.id
+    if not is_subscribed(user_id):
+        bot.send_message(
+            user_id,
+            '❌ <b>Доступ закрыт!</b>\n\n⚠️ Для использования бота необходимо подписаться на наш канал.',
+            parse_mode='html',
+            reply_markup=get_sub_markup()
+        )
+        return
     bot.send_message(
         message.chat.id,
         f'👋 Привет, <b>{message.from_user.first_name}</b>!\n\n{get_status_text(user_id)}',
@@ -229,10 +258,35 @@ def back_to_menu_callback(call):
         parse_mode='html', reply_markup=get_main_menu_markup(user_id)
     )
 
+@bot.callback_query_handler(func=lambda call: call.data == 'check_sub')
+def check_sub_callback(call):
+    user_id = call.message.chat.id
+    if is_subscribed(user_id):
+        bot.answer_callback_query(call.id, '✅ Подписка подтверждена!')
+        bot.edit_message_text(
+            f'👋 Привет, <b>{call.from_user.first_name}</b>!\n\n{get_status_text(user_id)}',
+            user_id, call.message.message_id,
+            parse_mode='html', reply_markup=get_main_menu_markup(user_id)
+        )
+    else:
+        bot.answer_callback_query(call.id, '❌ Вы еще не подписались!', show_alert=True)
+
 @bot.callback_query_handler(func=lambda call: call.data.startswith('topic_'))
 def topic_callback(call):
     topic_id = call.data
     user_id = call.message.chat.id
+    bot.answer_callback_query(call.id)
+
+    if not is_subscribed(user_id):
+        bot.answer_callback_query(call.id, '❌ Вы отписались от канала!', show_alert=True)
+        bot.edit_message_text(
+            '⚠️ <b>Доступ закрыт!</b>\n\nДля использования бота необходимо быть подписанным на наш канал.',
+            user_id, call.message.message_id,
+            parse_mode='html',
+            reply_markup=get_sub_markup()
+        )
+        return
+    
     bot.answer_callback_query(call.id)
     
     if topic_id == 'topic_10':
