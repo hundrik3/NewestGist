@@ -374,12 +374,13 @@ if __name__ == '__main__':
         print(f"❌ Error connecting to database: {e}")
         
     if WEBHOOK_HOST:
-        full_url = WEBHOOK_URL_BASE + WEBHOOK_URL_PATH
-        print(f"DEBUG: Setting webhook to: {full_url}")
-        bot.set_webhook(url=full_url)
+    try:
+        bot.remove_webhook()
         bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH)
-        print(f"Webhook: {WEBHOOK_URL_BASE}{WEBHOOK_URL_PATH}")
-        app.run(host='0.0.0.0', port=WEBHOOK_PORT)
+        print(f"✅ Webhook set: {WEBHOOK_URL_BASE}{WEBHOOK_URL_PATH}")
+    except Exception as e:
+        print(f"❌ Webhook error: {e}")
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
     else:
         print('♻️ Starting in Polling mode...')
         bot.polling(none_stop=True)
