@@ -384,6 +384,6 @@ if WEBHOOK_HOST:
     except Exception as e:
         print(f"❌ Webhook error (but continuing...): {e}")
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
-    else:
+else:
         print('♻️ Starting in Polling mode...')
         bot.polling(none_stop=True)
