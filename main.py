@@ -374,6 +374,9 @@ if __name__ == '__main__':
         print(f"❌ Error connecting to database: {e}")
         
     if WEBHOOK_HOST:
+        full_url = WEBHOOK_URL_BASE + WEBHOOK_URL_PATH
+        print(f"DEBUG: Setting webhook to: {full_url}")
+        bot.set_webhook(url=full_url)
         bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH)
         print(f"Webhook: {WEBHOOK_URL_BASE}{WEBHOOK_URL_PATH}")
         app.run(host='0.0.0.0', port=WEBHOOK_PORT)
